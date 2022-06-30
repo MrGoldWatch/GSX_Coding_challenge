@@ -1,0 +1,267 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/MrGoldWatch/GSX/1.0.0
+info:
+  description: This is a simple API
+  version: "1.0.0"
+  title: GSX TodoList
+
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: todolist
+    description: Secured Admin-only calls
+  - name: todolistitem
+    description: Operations available to regular developers
+paths:
+# create, edit and delete ToDoList
+  /ToDoList/{email}:
+    get:
+      tags:
+        - Todolist
+      summary: gets all todo lists associated with email
+      operationId: getAllTodoLists
+      description: |
+        By passing in the appropriate options, you can retrieve all todolists
+      parameters:
+        - name: email
+          in: path
+          description: user email
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todolist'
+        '400':
+          description: bad input parameter
+  /ToDoList:
+    post:
+      tags:
+        - Todolist
+      summary: adds a todolist item
+      operationId: addTodoList
+      description: Adds an item to the system
+      responses:
+        '200':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodolistCreate'
+        description: Inventory item to add
+
+  /todolist/{id}:
+    delete:
+      tags:
+        - Todolist
+      summary: gets all todo lists associated with email
+      operationId: removeTodoList
+      description: |
+        By passing in the appropriate options, you can delete the todolist
+      parameters:
+        - name: id
+          in: path
+          description: user id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: item deleted
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: array
+          #       items:
+          #         $ref: '#/components/schemas/TodolistItem'
+        '400':
+          description: bad input parameter
+
+    patch:
+      tags:
+        - Todolist
+      operationId: updateTodoList
+      parameters:
+        - name: id
+          in: path
+          description: user id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodolistCreate'
+      responses:
+        "200":
+          description: update operation was successful
+
+
+
+  /todolistitem:
+    post:
+      tags:
+        - TodolistItem
+      summary: adds a todolist item
+      operationId: addTodoListItem
+      description: Adds an todolistitem to the system
+      responses:
+        '201':
+          description: item created
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: an existing item already exists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodolistItemCreate'
+        description: Inventory item to add
+
+  /todolistitem/{id}:
+    patch:
+      tags:
+        - TodolistItem
+      operationId: updateTodoListItem
+      parameters:
+        - name: id
+          in: path
+          description: user id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodolistItemCreate'
+      responses:
+        "200":
+          description: update operation was successful
+
+    delete:
+      tags:
+        - TodolistItem
+      summary: removes todo list item
+      operationId: removeTodoListItem
+      description: |
+        By passing in the appropriate options, you can delete the todolist item
+      parameters:
+        - name: id
+          in: path
+          description: user id
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: search results matching criteria
+        '400':
+          description: bad input parameter
+components:
+  schemas:
+    TodolistCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Todo list 1
+        email:
+          type: string
+          example: hk@example.com
+
+    TodolistDelete:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: Todo list 1
+        email:
+          type: string
+          example: hk@example.com
+
+    Todolist:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Todo list 1
+        creationTs:
+          type: integer
+          format: int64
+        updateTs:
+          type: integer
+          format: int64
+        owner:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TodolistItem'
+
+    TodolistItemCreate:
+      type: object
+      properties:
+        lable:
+          type: string
+        parentId:
+          type: string
+          format: uuid
+        completed:
+          type: boolean
+
+    TodolistItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        lable:
+          type: string
+        creationTs:
+          type: integer
+          format: int64
+        parentId:
+          type: string
+          format: uuid
+        completed:
+          type: boolean
